@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Task 1 window measurement positions, version 1.0",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "cloud_sha256", "depth_positive", "windows"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "cloud_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "depth_positive": {"const": "into_opening"},
+    "windows": {"type":"array","items":{"$ref":"#/$defs/window"}}
+  },
+  "$defs": {
+    "length": {"type":"number","exclusiveMinimum":0},
+    "xyz": {"type":"array","minItems":3,"maxItems":3,"items":{"type":"number"}},
+    "window": {
+      "type":"object","additionalProperties":false,
+      "required":["wall_id","opening_id","profile_file","face","deep"],
+      "properties":{
+        "wall_id":{"type":"string","pattern":"^[a-zA-Z0-9_-]+$"},
+        "opening_id":{"type":"string","minLength":1},
+        "profile_file":{"type":"string","pattern":"^walls/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+_depth_profile[.]csv$"},
+        "face":{"$ref":"#/$defs/face"},"deep":{"$ref":"#/$defs/deep"}
+      }
+    },
+    "face": {
+      "type":"object","additionalProperties":false,
+      "required":["kind","endpoint_kind","depth_mm","fit_band_half_mm","height_m","width_mm","endpoints_xyz_m"],
+      "properties":{
+        "kind":{"const":"wall_face_aperture"},"endpoint_kind":{"const":"fitted"},"depth_mm":{"const":0},
+        "fit_band_half_mm":{"type":["number","null"],"minimum":0},"height_m":{"type":"number"},"width_mm":{"$ref":"#/$defs/length"},
+        "endpoints_xyz_m":{"type":"array","minItems":2,"maxItems":2,"items":{"$ref":"#/$defs/xyz"}}
+      }
+    },
+    "point": {
+      "type":"object","additionalProperties":false,"required":["side","original_index","xyz_m","u_mm","height_m","actual_depth_mm"],
+      "properties":{"side":{"enum":["left","right"]},"original_index":{"type":"integer","minimum":0},"xyz_m":{"$ref":"#/$defs/xyz"},
+                    "u_mm":{"type":"number"},"height_m":{"type":"number"},"actual_depth_mm":{"type":"number"}}
+    },
+    "representative": {
+      "type":"object","additionalProperties":false,"required":["slice_center_depth_mm","width_mm","endpoints"],
+      "properties":{"slice_center_depth_mm":{"type":"integer","minimum":0},"width_mm":{"$ref":"#/$defs/length"},
+                    "endpoints":{"type":"array","minItems":2,"maxItems":2,"items":{"$ref":"#/$defs/point"},
+                                 "prefixItems":[{"properties":{"side":{"const":"left"}}},{"properties":{"side":{"const":"right"}}}]}}
+    },
+    "range": {"type":"array","minItems":2,"maxItems":2,"items":{"type":"integer","minimum":0,"multipleOf":5}},
+    "deep": {
+      "type":"object","additionalProperties":false,
+      "required":["kind","status","height_m","depth_range_mm","width_mm","strip_median_width_mm","mid_height_samples_mm","representative"],
+      "properties":{"kind":{"const":"recessed_frame_candidate"},"status":{"enum":["candidate","no_stable_layer","insufficient_mid_height"]},
+                    "height_m":{"type":"number"},"depth_range_mm":{"oneOf":[{"$ref":"#/$defs/range"},{"type":"null"}]},
+                    "width_mm":{"type":["number","null"],"exclusiveMinimum":0},"strip_median_width_mm":{"type":["number","null"],"exclusiveMinimum":0},
+                    "mid_height_samples_mm":{"type":"array","items":{"$ref":"#/$defs/length"}},"representative":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/representative"}]}},
+      "oneOf":[
+        {"properties":{"status":{"const":"candidate"},"width_mm":{"$ref":"#/$defs/length"},"depth_range_mm":{"$ref":"#/$defs/range"},
+                       "strip_median_width_mm":{"$ref":"#/$defs/length"},"mid_height_samples_mm":{"minItems":5,"maxItems":5},"representative":{"$ref":"#/$defs/representative"}}},
+        {"properties":{"status":{"const":"no_stable_layer"},"depth_range_mm":{"type":"null"},"width_mm":{"type":"null"},
+                       "strip_median_width_mm":{"type":"null"},"mid_height_samples_mm":{"maxItems":0},"representative":{"type":"null"}}},
+        {"properties":{"status":{"const":"insufficient_mid_height"},"width_mm":{"type":"null"},"depth_range_mm":{"$ref":"#/$defs/range"},
+                       "strip_median_width_mm":{"$ref":"#/$defs/length"},"mid_height_samples_mm":{"maxItems":0},"representative":{"type":"null"}}}
+      ]
+    }
+  }
+}

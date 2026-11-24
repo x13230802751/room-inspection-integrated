@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0",
+  "cloud_sha256": "ba8486a772191b2feab26d00d7d190fec42987fa6b8a7a616a3d578cad076421",
+  "depth_positive": "into_opening",
+  "windows": [
+    {
+      "wall_id": "W04",
+      "opening_id": "W04-01",
+      "profile_file": "walls/W04/W04-01_depth_profile.csv",
+      "face": {
+        "kind": "wall_face_aperture",
+        "depth_mm": 0,
+        "fit_band_half_mm": 8,
+        "height_m": 1.2900039099145881,
+        "width_mm": 1500.0000010126334,
+        "endpoint_kind": "fitted",
+        "endpoints_xyz_m": [
+          [
+            38.43957546044547,
+            -73.41000123861996,
+            13.236823304217188
+          ],
+          [
+            37.6670165586304,
+            -73.40999876137133,
+            11.951073427196752
+          ]
+        ]
+      },
+      "deep": {
+        "kind": "recessed_frame_candidate",
+        "status": "candidate",
+        "height_m": 1.2900039099145881,
+        "depth_range_mm": [
+          155,
+          175
+        ],
+        "width_mm": 1440.0,
+        "strip_median_width_mm": 1440.0,
+        "mid_height_samples_mm": [
+          1440.0,
+          1440.0,
+          1440.0,
+          1440.0,
+          1440.0
+        ],
+        "representative": {
+          "slice_center_depth_mm": 165,
+          "width_mm": 1440.0,
+          "endpoints": [
+            {
+              "side": "left",
+              "original_index": 157170,
+              "xyz_m": [
+                38.56127164,
+                -73.39,
+                13.12870186
+              ],
+              "u_mm": -903.2057447795705,
+              "height_m": 1.3100051040263072,
+              "actual_depth_mm": 160.0006412836234
+            },
+            {
+              "side": "right",
+              "original_index": 162125,
+              "xyz_m": [
+                37.828188479999994,
+                -73.43,
+                11.88923057
+              ],
+              "u_mm": 536.7941746660591,
+              "height_m": 1.2700027261825322,
+              "actual_depth_mm": 170.00273184269284
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

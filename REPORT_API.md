@@ -1,0 +1,60 @@
+# Report and RMS integration
+
+Integrated edition: reports also display `walls[].support`, the complete native-support RMS baseline. The default RMS adapter has `no_slab=True` and receives `slab_half_thickness_mm=null`. Whole/patch still use the partner geometry; support is computed before masks and ROI cropping. The `alternate-rms` example retains its historical slab behavior and is not the no-filter main method.
+
+An inspection writes its measurements to disk before creating its Word and HTML files. Report API v1 renders the saved values. An RMS replacement belongs to the measurement profile. A layout replacement belongs to the independent report property of that profile.
+
+## Replace the RMS calculation and use the existing report
+
+Copy [the working alternate profile](profiles/alternate-rms.json) into `profiles/` under another name. Change `stages.rms.call` to your adapter's `module:function`. An adapter accepts `(xyz, roi)` plus configured keyword options. The caller passes opening-masked points in metres and the four ordered ROI corners. The actual callable, options and source fingerprint are saved with each inspection.
+
+| Backend return | Meaning |
+|---|---|
+| `indices` | Unique offsets into the **supplied subset**, one per selected point. The wrapper maps them to original scan rows. |
+| `signed_mm` | Finite, signed, orthogonal point-to-plane residuals in millimetres, one per index. |
+| `plane_center_m`, `plane_normal` | A finite three-coordinate point on the fitted reference plane and its unit normal in the input coordinate frame. |
+| `coverage_fraction` | Occupied fraction of the ROI grid in [0,1], or null when unavailable. |
+| `status`, `warnings` | `ok` or `warning` and an English list of warning codes or explanations. Raise `ValueError` with a reason when the footprint cannot be measured. |
+
+The wrapper calculates RMS as the square root of the mean squared signed residual, saves P95 and maximum absolute residuals, and writes `point_index` and `signed_mm` to the footprint’s NPZ. A backend that returns only a scalar needs an adapter supplying the supporting residuals for this audited measurement path. The report reads `walls[].whole` and `walls[].patch` from the resulting summary. An unavailable record carries a reason and displays a dash. [Adapter implementation](wall_rms.py) · [Machine-readable report RMS contract](schemas/report_rms.schema.json)
+
+```shell
+python inspect_room.py scan.pcd --profile alternate-rms --out results/new-rms
+```
+
+The supplied alternate uses the equivalent four-point implementation in the second upstream package. It demonstrates that the backend can be selected independently of the template. It reproduces the same metric on the same footprint. A new metric or reference surface should carry an explicit method label so readers can interpret its values.
+
+## Regenerate the report from an existing result
+
+```shell
+python reporting.py results/new-rms --out results/reformatted
+```
+
+This command consumes the stored evidence without the original scan, Node.js or the measurement backend. Its input must be a summary v2 run with a measurement manifest. The new directory contains the Word and HTML reports and the evidence files needed for the links. The original run remains available. To change actual RMS values, first run the replacement algorithm. Re-rendering preserves the measurements and the original RMS provenance.
+
+## Replace the report writer
+
+The default writer is `reporting:standard_reports`. A replacement implements the following function.
+
+```python
+def render(result_dir, summary, window_sections, **configured_options):
+    # Read scan and RMS values from summary and physical window sections from window_sections.
+    # Save an editable Word package to result_dir / "report.docx".
+    # Save its offline HTML companion to result_dir / "report.html".
+    ...
+```
+
+`result_dir` is a pathlib.Path for the staged bundle. Wall elevations, ROI files and residual files live at the relative paths in `summary`. Both result arguments are parsed JSON dictionaries. `summary["algorithms"]["stages"]["rms"]` identifies the actual measurement backend. New runs store a matched manual comparison in `summary["manual_reference"]`, or null if none is available. This preserves tape comparisons when partners render a saved run on another computer. `summary["reporting"]` supplies the active writer in memory. The window record uses schema 1.0. A legacy v2 result that predates this file is marked `availability="not_recorded"`. A declared but missing or mismatched window file fails validation.
+
+Use a local profile with independent entries as shown below. Use the same `--profile` argument in the CLI or select the installed profile in the local browser. The reporting-only command resolves just the writer, even if the original RMS model is unavailable.
+
+```json
+{
+  "api_version": 1,
+  "name": "Partner inspection",
+  "stages": {"rms": {"call": "extensions.partner_rms:measure"}},
+  "report": {"call": "extensions.partner_report:render", "options": {}}
+}
+```
+
+The measurement CLI and the reporting-only CLI publish a new directory after successful generation. Missing, empty or invalid report outputs fail the run. `report_manifest.json` records the writer, RMS backend, input scan digest, summary and window-file digests, and the two output filenames. The example integration test supplies a different writer and a saved RMS fixture, and verifies that the value reaches both formats. [Report dispatcher](reporting.py) · [Executable contract test](tests/check_reporting.py)

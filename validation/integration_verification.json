@@ -1,0 +1,211 @@
+{
+  "status": "passed",
+  "records": [
+    {
+      "source": "M04.pcd",
+      "sha256": "bbaa83cbd814c20b06c80e87f23c72bc7cbd5f07c57530ff67432dea6444568f",
+      "exact_native_membership": true,
+      "n_input": 510190,
+      "n_walls": 4,
+      "structural_status": "ok",
+      "walls": [
+        {
+          "wall": "W01",
+          "support_rms_mm": 1.351415697825274,
+          "n_support": 113162
+        },
+        {
+          "wall": "W02",
+          "support_rms_mm": 1.3247150661367373,
+          "n_support": 37424
+        },
+        {
+          "wall": "W03",
+          "support_rms_mm": 1.110511412367615,
+          "n_support": 42138
+        },
+        {
+          "wall": "W04",
+          "support_rms_mm": 1.413805422606993,
+          "n_support": 114837
+        }
+      ],
+      "opening_candidates": [
+        {
+          "wall": "W02",
+          "type": "door",
+          "status": "candidate"
+        }
+      ],
+      "valid_patches": 2,
+      "room_dimensions_mm": {
+        "length_mm": 3053.9925661091665,
+        "width_mm": 2080.7664426715605,
+        "height_mm": 3087.742240984885,
+        "floor_vertices_m": [
+          [
+            -0.3020446257264391,
+            1.9420853218733536,
+            -5.511619599905599
+          ],
+          [
+            -1.3481391808381058,
+            -0.9284876230162662,
+            -5.513380111609597
+          ],
+          [
+            0.6113549682619406,
+            -1.6376940613923805,
+            -5.517827857091667
+          ],
+          [
+            1.6507197106515357,
+            1.2326641310611408,
+            -5.516055442838982
+          ]
+        ],
+        "ceiling_vertices_m": [
+          [
+            -0.3008367666500894,
+            1.9373335835372212,
+            -2.4286441942971275
+          ],
+          [
+            -1.3452933642249627,
+            -0.9287582484213933,
+            -2.425210538502191
+          ],
+          [
+            0.6122941888952848,
+            -1.6372735574893702,
+            -2.4253086854208012
+          ],
+          [
+            1.6500319004933222,
+            1.2285950052530974,
+            -2.4287392370309844
+          ]
+        ],
+        "boundary_wall_ids": [
+          "W01",
+          "W02",
+          "W04",
+          "W03"
+        ]
+      },
+      "whole_statuses": {
+        "W01": "warning",
+        "W02": "warning",
+        "W03": "ok",
+        "W04": "warning"
+      }
+    },
+    {
+      "source": "M26.pcd",
+      "sha256": "a9b2b0c13d315314e106ecdbbc8e53acb693805dec8c6fb1c641f5a25dd48f91",
+      "exact_native_membership": true,
+      "n_input": 793393,
+      "n_walls": 4,
+      "structural_status": "ok",
+      "walls": [
+        {
+          "wall": "W01",
+          "support_rms_mm": 2.4138604785263333,
+          "n_support": 48915
+        },
+        {
+          "wall": "W02",
+          "support_rms_mm": 1.262144917573085,
+          "n_support": 125467
+        },
+        {
+          "wall": "W03",
+          "support_rms_mm": 1.1422074980850732,
+          "n_support": 136039
+        },
+        {
+          "wall": "W04",
+          "support_rms_mm": 1.0833182527586587,
+          "n_support": 106065
+        }
+      ],
+      "opening_candidates": [
+        {
+          "wall": "W01",
+          "type": "window",
+          "status": "candidate"
+        },
+        {
+          "wall": "W02",
+          "type": "door",
+          "status": "candidate"
+        }
+      ],
+      "valid_patches": 3,
+      "room_dimensions_mm": {
+        "length_mm": 3652.0364673125155,
+        "width_mm": 2885.284656294543,
+        "height_mm": 2772.4385028044658,
+        "floor_vertices_m": [
+          [
+            -0.7304522435003861,
+            2.106617446106138,
+            -13.473108566530435
+          ],
+          [
+            -2.198745651713786,
+            -0.37540786845264296,
+            -13.471452218817955
+          ],
+          [
+            0.9459576110701643,
+            -2.2364003570864934,
+            -13.464978086092957
+          ],
+          [
+            2.4121913691834096,
+            0.2502756013986759,
+            -13.46664346614769
+          ]
+        ],
+        "ceiling_vertices_m": [
+          [
+            -0.7326829835446179,
+            2.1064444937894606,
+            -10.697275117028827
+          ],
+          [
+            -2.1996291946994844,
+            -0.3733061941097875,
+            -10.697699937654038
+          ],
+          [
+            0.9435539966758114,
+            -2.2334018057699865,
+            -10.695938305164772
+          ],
+          [
+            2.4084442227180465,
+            0.25100090674278897,
+            -10.695515044564445
+          ]
+        ],
+        "boundary_wall_ids": [
+          "W01",
+          "W02",
+          "W04",
+          "W03"
+        ]
+      },
+      "whole_statuses": {
+        "W01": "ok",
+        "W02": "ok",
+        "W03": "warning",
+        "W04": "ok"
+      }
+    }
+  ],
+  "max_baseline_difference_mm": 4.440892098500626e-16,
+  "physical_accuracy_validated": false,
+  "definition": "Exact native-support RMS; geometry-only eligibility and ROI masking for separate whole/patch measurements"
+}

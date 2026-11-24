@@ -1,0 +1,20 @@
+{
+  "source": "Course Task 1 dataset, README/readme.md and its M04 wall photograph",
+  "unit": "mm",
+  "rooms": {
+    "M26": {
+      "sha256": "a9b2b0c13d315314e106ecdbbc8e53acb693805dec8c6fb1c641f5a25dd48f91",
+      "dimensions_mm": {"length": 3648, "width": 2880, "height": 2773},
+      "openings_mm": {"door": {"width": 900, "height": 2180}, "window": {"width": 2375, "height": 1736}},
+      "tape_depth_mm": null,
+      "rms": {"value_mm": 1.0, "wall_description": "Wall opposite the door", "wall_id_in_this_scan": "W03", "footprint_xyz_m": null}
+    },
+    "M04": {
+      "sha256": "bbaa83cbd814c20b06c80e87f23c72bc7cbd5f07c57530ff67432dea6444568f",
+      "dimensions_mm": {"length": 3050, "width": 2079, "height": 3086},
+      "openings_mm": {"door": {"width": 918, "height": 2316}},
+      "tape_depth_mm": null,
+      "rms": {"value_mm": 1.8, "wall_description": "Right-hand wall when looking from inside toward the photographed doorway", "wall_id_in_this_scan": "W01", "footprint_xyz_m": null}
+    }
+  }
+}

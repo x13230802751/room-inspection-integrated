@@ -1,0 +1,56 @@
+{
+  "partner_archive": "Task1_Partner_Kit.zip",
+  "partner_archive_sha256": "aaa5e6837a0e7fc137cc99049b0f5e9d9266f39f4d996695e55a2c9a512ca939",
+  "unchanged_partner_modules": [
+    {
+      "file": "openings.py",
+      "unchanged_from_partner": true,
+      "sha256_lf": "c5708c106090dec7608f89306def8ff2c64b8a8ea455afcf7f6039e00472f6ac"
+    },
+    {
+      "file": "room_geometry.py",
+      "unchanged_from_partner": true,
+      "sha256_lf": "f0caef98f8d0d594d584568b59d54dccdfb0c9bc4ca56dda1ea570186c0ab50b"
+    },
+    {
+      "file": "depth_profile.py",
+      "unchanged_from_partner": true,
+      "sha256_lf": "5b90d97751be3d02b0924b4ae78d9f7673949a92d497d831b67bc6429e50695c"
+    },
+    {
+      "file": "window_sections.py",
+      "unchanged_from_partner": true,
+      "sha256_lf": "beb24cb371eb7acb1f59d338a10c0f182d09cbbbfde299abf9260fbcf6ff02f9"
+    },
+    {
+      "file": "frame_sections.py",
+      "unchanged_from_partner": true,
+      "sha256_lf": "87d8f0cb474473d29d57fda97782147d6a45c0c0c13dcc073141ce315f93aa37"
+    },
+    {
+      "file": "detect_profile.cjs",
+      "unchanged_from_partner": true,
+      "sha256_lf": "a210ed69d26f4690c425a0d1ca2bd33f02856ffa7e738563321b1cc5c0b7ab97"
+    },
+    {
+      "file": "opening-geometry.js",
+      "unchanged_from_partner": true,
+      "sha256_lf": "abb5c286f870579b608a20455e97c066144bc72ac2ab3be3937c6a373dafd68e"
+    },
+    {
+      "file": "report_style.py",
+      "unchanged_from_partner": true,
+      "sha256_lf": "3c4e4c66d0ecabeb3d88b4a889b40b3dba331505a50b6ad891ce1972b5816dc2"
+    }
+  ],
+  "supported_patch_function_unchanged": true,
+  "native_source_repository": "https://github.com/x13230802751/room-wall-rms-framework",
+  "native_source_commit": "3cdd57c3c08f5e887baca2e6f9c5eae1d4e609c8",
+  "integration_changes": [
+    "Native wall support adapter and no-slab SVD RMS",
+    "Support baseline added to summary/CSV/Word/HTML",
+    "Bundled backend and source-index provenance",
+    "Launcher standard-library path precedence fix"
+  ],
+  "historical_experiments_included": false
+}

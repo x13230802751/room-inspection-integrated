@@ -1,0 +1,70 @@
+{
+  "packages": [
+    {
+      "repository": "x13230802751/wall-flatness-v3",
+      "commit": "952259ce8037f042155139ca3fb7af58cd9e2d5f",
+      "files": [
+        {
+          "source": "code/wall_flatness/__init__.py",
+          "install": "wall_flatness/__init__.py",
+          "upstream_sha256": "a30b9d8441bf0843ea91f55f6520480d8564c413cc04f9c4f7ce9907fd06db71",
+          "english_sha256": "17d4d0976c8ade9c905ac2dfadc63c27e36f7ca1512037036b78a4d31791604b"
+        },
+        {
+          "source": "code/wall_flatness/geometry.py",
+          "install": "wall_flatness/geometry.py",
+          "upstream_sha256": "c3975c22255db7cbd3481a3b25ae5ecd4c9707499631a51d44166cbe15a2c238",
+          "english_sha256": "8592a0d11a8b2f257151fa3e2d080d7344e9c8ca10bdca62ea03d1e3ced882c0"
+        },
+        {
+          "source": "code/wall_flatness/io.py",
+          "install": "wall_flatness/io.py",
+          "upstream_sha256": "c16fc33faf97cf2c45ca927faca1c29348790ec37ac3c7638aa2220fda1adc83",
+          "english_sha256": "16444fb11535d31c9522791c2c020393c3f9a46bb966fe271c9e21c5303d237c"
+        }
+      ]
+    },
+    {
+      "repository": "x13230802751/wall-rms-pipeline-v3",
+      "commit": "149d280662e9f6256608efd1896b1744e82cf5d4",
+      "files": [
+        {
+          "source": "room_walls/__init__.py",
+          "install": "room_walls/__init__.py",
+          "upstream_sha256": "4c2216b3839e9840bd375b9680b154b08da47b2164239eace6be9cd47b6f68c2",
+          "english_sha256": "be7b6599ed211491379d35a019bfa90daef7a1d9ffe52f159bd5a0a37da6036b"
+        },
+        {
+          "source": "room_walls/config.py",
+          "install": "room_walls/config.py",
+          "upstream_sha256": "f73cf0e4d07ddd5defbca93b44f3cf571c47d2da852440571866689bc0712d46",
+          "english_sha256": "c3599f6b65a17be6b13eb68136a7c6b027a8788720b495611f2b5b5593501fd0"
+        },
+        {
+          "source": "room_walls/discovery.py",
+          "install": "room_walls/discovery.py",
+          "upstream_sha256": "9b710ad6a7eca63a9802cd50a7fb577cddc3ab607a9c4e7b2e4c1b32d63535dd",
+          "english_sha256": "522f813625af893d217cb5c230d9a7a089b12ba310b3a433484a73fb2dc0dde6"
+        },
+        {
+          "source": "room_walls/planes.py",
+          "install": "room_walls/planes.py",
+          "upstream_sha256": "b3f067f06c30e03a4288684f3d6df460f68368f460a579649d289b2b540b099e",
+          "english_sha256": "eaa20c604b8c5b3e9c6b4e110a36d384b5efc9a6ee119e0007756659326f7217"
+        },
+        {
+          "source": "room_walls/vendor/__init__.py",
+          "install": "room_walls/vendor/__init__.py",
+          "upstream_sha256": "1ccc3aaefd166d207938776383afc0a90bf35d9164b4172b30ee28775f3b54d3",
+          "english_sha256": "706c4f5d6e02a686d6bb03e292739b0a9420e853cc4c1c60112d97aa4d368c4b"
+        },
+        {
+          "source": "room_walls/vendor/geometry.py",
+          "install": "room_walls/vendor/geometry.py",
+          "upstream_sha256": "fdd84e602a17e72efcf5c542631183c1f938d6c9e9aa2fa599697e5b4817e4a2",
+          "english_sha256": "8592a0d11a8b2f257151fa3e2d080d7344e9c8ca10bdca62ea03d1e3ced882c0"
+        }
+      ]
+    }
+  ]
+}

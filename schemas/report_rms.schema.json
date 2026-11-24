@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Report API v1 RMS record for native support, whole wall or patch",
+  "type": "object",
+  "required": ["status"],
+  "properties": {
+    "status": {"enum": ["ok", "warning", "unavailable"]},
+    "rms_mm": {"type": "number", "minimum": 0},
+    "n_selected": {"type": "integer", "minimum": 3},
+    "p95_abs_mm": {"type": "number", "minimum": 0},
+    "max_abs_mm": {"type": "number", "minimum": 0},
+    "coverage_fraction": {"type": ["number","null"], "minimum": 0, "maximum": 1},
+    "plane_center_m": {"$ref": "#/$defs/xyz"}, "plane_normal": {"$ref": "#/$defs/xyz"},
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "reason": {"type": "string", "minLength": 1},
+    "corners_m": {"type":["array","null"],"minItems":4,"maxItems":4,"items":{"$ref":"#/$defs/xyz"}},
+    "roi_file": {"type":"string"}, "residual_file": {"type":"string"}
+  },
+  "$defs":{"xyz":{"type":"array","minItems":3,"maxItems":3,"items":{"type":"number"}}},
+  "oneOf":[
+    {"properties":{"status":{"enum":["ok","warning"]}},
+     "required":["rms_mm","p95_abs_mm","max_abs_mm","n_selected","coverage_fraction","plane_center_m","plane_normal","warnings","corners_m","roi_file","residual_file"]},
+    {"properties":{"status":{"const":"unavailable"}},"required":["reason"],"not":{"required":["rms_mm"]}}
+  ]
+}

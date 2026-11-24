@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Task 1 local algorithm profile, API version 1",
+  "type": "object", "required": ["api_version"],
+  "properties": {
+    "api_version": {"const": 1}, "name": {"type": "string"},
+    "report": {"$ref":"#/$defs/stage"},
+    "stages": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "walls": {"$ref": "#/$defs/stage"}, "corners": {"$ref": "#/$defs/stage"},
+        "openings": {"$ref": "#/$defs/stage"}, "patch": {"$ref": "#/$defs/stage"}, "rms": {"$ref": "#/$defs/stage"}
+      }
+    }
+  },
+  "$defs": {
+    "stage": {
+      "type":"object","additionalProperties":false,
+      "properties":{"call":{"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_]*([.][A-Za-z_][A-Za-z0-9_]*)*:[A-Za-z_][A-Za-z0-9_]*$"},
+                    "label":{"type":"string"},"options":{"type":"object","not":{"required":["context"]}}}
+    }
+  }
+}

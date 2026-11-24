@@ -1,0 +1,9 @@
+{
+  "api_version": 1,
+  "name": "Historical recovery pipeline (not the native-support main method)",
+  "stages": {
+    "walls": {"call": "room_walls.discovery:discover"},
+    "corners": {"call": "room_geometry:room_boundaries"},
+    "rms": {"call": "wall_flatness.geometry:measure"}
+  }
+}
