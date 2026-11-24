@@ -24,4 +24,4 @@ room_walls/vendor/io.py 与 geometry.py 源自用户项目 civl7023-wall-flatnes
 
 Chen 等人的论文是墙体几何测量思路参考；未复制其神经网络、训练权重或声称完整复现。
 
-每次运行保存 native/bin/manifest.json 中的构建版本、二进制/适配器哈希、运行参数、原版支持点输出哈希和输入点云哈希。本目录来自独立 room-wall-rms-framework 的原版检测适配层。组合项目的默认墙角、门窗、局部测区和报告位于仓库根目录，采用伙伴 Task 1 实现；extensions/native_support.py 负责桥接和无厚度带 RMS。它们都不属于原版检测器的功能。主墙面 RMS 流程不恢复附近点、不做滤波。
+每次运行保存 native/bin/manifest.json 中的构建版本、二进制/适配器哈希、运行参数、原版支持点输出哈希和输入点云哈希。本目录来自独立 room-wall-rms-framework 的原版检测适配层。组合项目的默认墙角、门窗和报告位于仓库根目录，采用伙伴 Task 1 实现；extensions/native_support.py 负责桥接和无厚度带 RMS。它们都不属于原版检测器的功能。主墙面 RMS 流程不恢复附近点、不做滤波。
