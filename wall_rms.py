@@ -3,7 +3,8 @@ import json
 import numpy as np
 
 from room_geometry import plane, section_axis
-from wall_flatness.geometry import inside_polygon, measure
+from wall_flatness.geometry import inside_polygon
+from extensions.native_support import measure
 
 
 def write_json(path, data):
@@ -67,11 +68,8 @@ def supported_patch(xyz, wall, floor, boundary, size, *, observed_center=False):
 def measure_scope(output, points, ids, corners, room_name, wall_id, scope, algorithm=measure):
     directory = output/"walls"/wall_id/scope
     directory.mkdir(parents=True, exist_ok=True)
-    base=algorithm
-    while hasattr(base,'func'):base=base.func
-    no_slab=getattr(base,'no_slab',False)
     roi = {"unit":"m","room_id":room_name,"roi_id":f"{wall_id}_{scope}",
-           "corners":corners,"slab_half_thickness_mm":None if no_slab else 50}
+           "corners":corners,"slab_half_thickness_mm":None}
     write_json(directory/"roi.json",roi)
     try:
         # The upstream function scales both XYZ and corners together. Both are in metres here.

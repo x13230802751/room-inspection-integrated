@@ -1,12 +1,12 @@
 # Report and RMS integration
 
-Integrated edition: reports also display `walls[].support`, the complete native-support RMS baseline. The default RMS adapter has `no_slab=True` and receives `slab_half_thickness_mm=null`. Whole/patch still use the partner geometry; support is computed before masks and ROI cropping. The `alternate-rms` example retains its historical slab behavior and is not the no-filter main method.
+Reports display the native-support, whole and patch RMS recorded by the measurement pipeline. Every ROI uses slab_half_thickness_mm=null.
 
 An inspection writes its measurements to disk before creating its Word and HTML files. Report API v1 renders the saved values. An RMS replacement belongs to the measurement profile. A layout replacement belongs to the independent report property of that profile.
 
 ## Replace the RMS calculation and use the existing report
 
-Copy [the working alternate profile](profiles/alternate-rms.json) into `profiles/` under another name. Change `stages.rms.call` to your adapter's `module:function`. An adapter accepts `(xyz, roi)` plus configured keyword options. The caller passes opening-masked points in metres and the four ordered ROI corners. The actual callable, options and source fingerprint are saved with each inspection.
+The RMS callable accepts (xyz, roi) and configured keyword options. The actual callable and source fingerprint are recorded in the summary.
 
 | Backend return | Meaning |
 |---|---|
@@ -17,12 +17,6 @@ Copy [the working alternate profile](profiles/alternate-rms.json) into `profiles
 | `status`, `warnings` | `ok` or `warning` and an English list of warning codes or explanations. Raise `ValueError` with a reason when the footprint cannot be measured. |
 
 The wrapper calculates RMS as the square root of the mean squared signed residual, saves P95 and maximum absolute residuals, and writes `point_index` and `signed_mm` to the footprint’s NPZ. A backend that returns only a scalar needs an adapter supplying the supporting residuals for this audited measurement path. The report reads `walls[].whole` and `walls[].patch` from the resulting summary. An unavailable record carries a reason and displays a dash. [Adapter implementation](wall_rms.py) · [Machine-readable report RMS contract](schemas/report_rms.schema.json)
-
-```shell
-python inspect_room.py scan.pcd --profile alternate-rms --out results/new-rms
-```
-
-The supplied alternate uses the equivalent four-point implementation in the second upstream package. It demonstrates that the backend can be selected independently of the template. It reproduces the same metric on the same footprint. A new metric or reference surface should carry an explicit method label so readers can interpret its values.
 
 ## Regenerate the report from an existing result
 

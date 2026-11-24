@@ -16,7 +16,7 @@ Use this map when presenting the work, reviewing an implementation or assigning 
 
 ## Upstream attribution
 
-The historical Python SDK remains pinned for partner geometry helpers and the explicit legacy profile. It is not the current default wall detector or RMS selector. The default native backend attribution and research/GPL restrictions are recorded in [native provenance](native_backend/PROVENANCE.md). [Historical wall SDK, commit 149d280](https://github.com/x13230802751/wall-rms-pipeline-v3/tree/149d280662e9f6256608efd1896b1744e82cf5d4) · [Geometry helpers, commit 952259c](https://github.com/x13230802751/wall-flatness-v3/tree/952259ce8037f042155139ca3fb7af58cd9e2d5f)
+The historical Python SDK remains pinned for partner geometry helpers. It is not the current default wall detector or RMS selector. The default native backend attribution and research/GPL restrictions are recorded in [native provenance](native_backend/PROVENANCE.md). [Historical wall SDK, commit 149d280](https://github.com/x13230802751/wall-rms-pipeline-v3/tree/149d280662e9f6256608efd1896b1744e82cf5d4) · [Geometry helpers, commit 952259c](https://github.com/x13230802751/wall-flatness-v3/tree/952259ce8037f042155139ca3fb7af58cd9e2d5f)
 
 ## Continuity with the earlier source ZIP
 

@@ -62,6 +62,7 @@ py -3 -m venv .venv
 ## 文档与验证
 
 - [组合方案与任务说明 Word](docs/组合方案与任务说明.docx)
+- [Task 1 完整实验总报告](docs/Task1_Evaluation.docx)
 - [说明 Markdown](docs/project_guide.md)
 - [接口说明](INTERFACE_SPEC.md)
 - [官方 GT 对照](docs/gt_comparison.md)
@@ -78,4 +79,4 @@ python tests/check_reporting.py results/my_room
 
 检查覆盖无 50 mm RMS 厚度筛选、原始点号、导入隔离、旋转坐标、毫米单位、非有限行、双门、窗和无顶面。实测审计将 M04、M26 八面墙的支持集和 RMS 与独立框架核对。运行成功不等于工程精度合格；门窗身份、测区对应和实际尺寸仍需独立真值验证。
 
-原始点云、课程文件、历史报告、原版依赖源码、二进制和个人运行路径不上传。`legacy-recovery` profile 仅供历史复查，不是默认方法。
+完整实验总报告基于重新运行的 M04、M26，汇总尺寸、门窗与三种测区的 RMS。原始点云和逐点运行产物保存在本地。

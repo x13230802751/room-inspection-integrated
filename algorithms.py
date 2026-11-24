@@ -69,6 +69,12 @@ def resolve_callable(stage, default_spec, override, *, use_cloud_context=False):
     if not isinstance(override,dict) or set(override)-{"call","label","options"}:
         raise ValueError(f"{stage} accepts call, label and options.")
     address=override.get("call",default)
+    retired = {
+        "walls": ("room_walls.discovery:discover",),
+        "rms": ("wall_flatness.geometry:measure", "room_walls.vendor.geometry:measure"),
+    }
+    if address in retired.get(stage, ()):
+        raise ValueError(f"{stage} requires a current measurement backend. Use the default profile.")
     options=override.get("options",{})
     if (not isinstance(address,str) or not re.fullmatch(r"[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*:[A-Za-z_]\w*",address)
             or not isinstance(options,dict) or "context" in options):

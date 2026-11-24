@@ -62,7 +62,7 @@ def main():
     page();h('六 运行交付与剩余工作')
     p('仓库 https://github.com/x13230802751/room-inspection-integrated 。本地文件夹是 E:/博士/选课/7023/room_inspection_integrated。原压缩包和旧项目未被替换。组合仓库自带所需 Python 源码，不再要求用户找到另一个项目目录。')
     p('安装顺序：Git 克隆 → Python 虚拟环境与 requirements.txt → native_backend/scripts/fetch_native.py 下载固定版本原版代码 → native_backend/native/build.py 编译 → inspect_room.py 运行。Windows 网页入口为 run.cmd。详细命令在 README。')
-    p('本机运行例：E:/anaconda3/python.exe inspect_room.py room.pcd --unit m --up 0 0 1 --out results/new_run。输出目录需为新目录；每次运行都记录输入和算法来源。将其他算法设成 profile 时须检查实际函数记录，legacy-recovery 不代表无滤波主方法。')
+    p('运行示例为 python inspect_room.py room.pcd --unit m --up 0 0 1 --out results/new_run。每次使用新输出目录。summary.json 记录输入和算法来源，完整实验总报告见 docs/Task1_Evaluation.docx。')
     p('已完成：五接口组合、原始支持点桥接、无厚度带 RMS、单独支持点基线、默认网页/命令行接入、M04/M26 完整实验、逐点与数值核对、报告读写和失败分支验证。')
     p('仍需小组完成：实际门窗身份复核、墙身份/测区与官方参考配准、各类工程精度评价、课程文献与展示。原版支持点可能漏掉真实鼓包，几何检测可能误识别杂物。当前软件能计算并追溯结果，不等于已取得语义真值或保证所有房间准确。')
     doc.save(ROOT/'docs/组合方案与任务说明.docx')

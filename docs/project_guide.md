@@ -90,7 +90,7 @@ GT 来源是课程点云说明 readme(1).md 的 Ground-Truth Measurements：M04 
 
 安装顺序：Git 克隆 → Python 虚拟环境与 requirements.txt → native_backend/scripts/fetch_native.py 下载固定版本原版代码 → native_backend/native/build.py 编译 → inspect_room.py 运行。Windows 网页入口为 run.cmd。详细命令在 README。
 
-本机运行例：E:/anaconda3/python.exe inspect_room.py room.pcd --unit m --up 0 0 1 --out results/new_run。输出目录需为新目录；每次运行都记录输入和算法来源。将其他算法设成 profile 时须检查实际函数记录，legacy-recovery 不代表无滤波主方法。
+运行示例为 python inspect_room.py room.pcd --unit m --up 0 0 1 --out results/new_run。每次使用新输出目录。summary.json 记录输入和算法来源，完整实验总报告见 docs/Task1_Evaluation.docx。
 
 已完成：五接口组合、原始支持点桥接、无厚度带 RMS、单独支持点基线、默认网页/命令行接入、M04/M26 完整实验、逐点与数值核对、报告读写和失败分支验证。
 
