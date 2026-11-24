@@ -1,6 +1,6 @@
 # Report and RMS integration
 
-Reports display the native-support, whole and patch RMS recorded by the measurement pipeline. Every ROI uses slab_half_thickness_mm=null.
+Reports display the whole-wall RMS recorded by the measurement pipeline. Every ROI uses slab_half_thickness_mm=null.
 
 An inspection writes its measurements to disk before creating its Word and HTML files. Report API v1 renders the saved values. An RMS replacement belongs to the measurement profile. A layout replacement belongs to the independent report property of that profile.
 
@@ -16,7 +16,7 @@ The RMS callable accepts (xyz, roi) and configured keyword options. The actual c
 | `coverage_fraction` | Occupied fraction of the ROI grid in [0,1], or null when unavailable. |
 | `status`, `warnings` | `ok` or `warning` and an English list of warning codes or explanations. Raise `ValueError` with a reason when the footprint cannot be measured. |
 
-The wrapper calculates RMS as the square root of the mean squared signed residual, saves P95 and maximum absolute residuals, and writes `point_index` and `signed_mm` to the footprint’s NPZ. A backend that returns only a scalar needs an adapter supplying the supporting residuals for this audited measurement path. The report reads `walls[].whole` and `walls[].patch` from the resulting summary. An unavailable record carries a reason and displays a dash. [Adapter implementation](wall_rms.py) · [Machine-readable report RMS contract](schemas/report_rms.schema.json)
+The wrapper calculates RMS as the square root of the mean squared signed residual, saves P95 and maximum absolute residuals, and writes `point_index` and `signed_mm` to the footprint’s NPZ. A backend that returns only a scalar needs an adapter supplying the supporting residuals for this audited measurement path. The report reads `walls[].whole` from the resulting summary. An unavailable record carries a reason and displays a dash. [Adapter implementation](wall_rms.py) · [Machine-readable report RMS contract](schemas/report_rms.schema.json)
 
 ## Regenerate the report from an existing result
 

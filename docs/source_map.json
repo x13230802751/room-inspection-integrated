@@ -43,7 +43,6 @@
       "sha256_lf": "3c4e4c66d0ecabeb3d88b4a889b40b3dba331505a50b6ad891ce1972b5816dc2"
     }
   ],
-  "supported_patch_function_unchanged": true,
   "native_source_repository": "https://github.com/x13230802751/room-wall-rms-framework",
   "native_source_commit": "3cdd57c3c08f5e887baca2e6f9c5eae1d4e609c8",
   "integration_changes": [

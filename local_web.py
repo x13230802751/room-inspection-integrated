@@ -67,7 +67,7 @@ class Inspector(BaseHTTPRequestHandler):
             return self.reply(403,{"error":"Use the local address shown in the launcher."})
         path = unquote(urlsplit(self.path).path)
         if path=="/":
-            names={"default":"Efficient RANSAC native supports (no filtering)","observed-patch":"Native supports; patch near observed centroid"}
+            names={"default":"Efficient RANSAC native supports (no filtering)"}
             options="".join(f'<option value="{escape(key,quote=True)}">{escape(names.get(key,key))}</option>' for key in profile_names())
             return self.reply(200,PAGE.replace("TOKEN_VALUE",self.server.token).replace("PROFILE_OPTIONS",options).encode("utf8"),"text/html; charset=utf-8")
         parts = path.split("/",3)

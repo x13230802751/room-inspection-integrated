@@ -13,7 +13,6 @@ DEFAULTS = {
     "walls": ("extensions.native_support:walls", "Efficient RANSAC exact native supports; no recovery", 2),
     "corners": ("room_geometry:room_boundaries", "Partner room enclosure and structural intersections", 3),
     "openings": ("openings:profile_candidates", "Horizontal and vertical profile fitting", 6),
-    "patch": ("wall_rms:supported_patch", "Supported patch nearest the wall centre", 5),
     "rms": ("extensions.native_support:measure", "Original-coordinate SVD RMS; no slab or filtering", 2),
 }
 
@@ -27,7 +26,6 @@ class Algorithms:
     walls: object
     corners: object
     openings: object
-    patch: object
     rms: object
     manifest: dict
     report: tuple | None = None

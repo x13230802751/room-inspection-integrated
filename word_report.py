@@ -38,14 +38,12 @@ def write_word_report(output, data, sections):
         doc.add_paragraph("Width is projected along the local wall axis at the listed elevation above the floor. Height is taken at the centreline. The default detector fits the visible edges within 8 mm of the wall plane.")
     else:
         doc.add_paragraph("The detector found no openings with sufficient edge support.")
-    sizes=data["patch_size_m"]
-    table(doc,"Table 3  Native support and geometric footprint RMS",
-          ["Wall","Support RMS (mm)","Whole RMS (mm)","Patch RMS (mm)","Support points"],
-          [[w["id"],fmt(w.get("support",{}).get("rms_mm"),6),fmt(w["whole"].get("rms_mm"),3),fmt(w["patch"].get("rms_mm"),3),w.get("support",{}).get("n_selected","—")] for w in walls],
-          [1.3,2,2,1.9,1.9],(1,2,3,4))
-    doc.add_paragraph(f'The local patch measures {sizes[0]:g} × {sizes[1]:g} m. A dash indicates an unavailable result. Each available footprint has its own fitted plane.')
+    table(doc,"Table 3  Whole-wall RMS",
+          ["Wall","Whole RMS (mm)","Support points"],
+          [[w["id"],fmt(w["whole"].get("rms_mm"),3),w["assigned_points"]] for w in walls],
+          [1.5,3,3],(1,2))
     if data.get('recovery')=='none':
-        doc.add_paragraph('Support RMS uses every original Efficient RANSAC wall support point before opening masks or four-corner cropping. No denoising, nearby-point recovery or normal-distance slab is used. The partner pipeline excludes detected opening footprints from whole and patch measurement points; opening identities require physical verification.')
+        doc.add_paragraph('Whole-wall RMS uses original Efficient RANSAC support points inside the structural corners. No denoising, nearby-point recovery or normal-distance slab is used. The partner pipeline excludes detected opening footprints from whole-wall measurement points; opening identities require physical verification.')
     if ref:
         r=ref["rms"]
         doc.add_paragraph(f'Manual RMS is {r["value_mm"]:.1f} mm. {r["wall_description"]}. The measured footprint in the photograph or field notes has no recorded corner coordinates.')
@@ -75,7 +73,7 @@ def write_word_report(output, data, sections):
     for i,w in enumerate(walls,1):
         heading(doc,f'{w["id"]}  Wall elevation and original-point support',new_page=True)
         figure(doc,output/w["elevation_file"],f'Figure {i}  {w["id"]} in wall-local coordinates.',width=5.4)
-        doc.add_paragraph("The navy outline joins structural corners A–D. Orange and teal mark doors and windows. A green dashed outline marks an available patch. A red circle marks a corner farther than 50 mm from its nearest observed wall point.")
+        doc.add_paragraph("The navy outline joins structural corners A–D. Orange and teal mark doors and windows. A red circle marks a corner farther than 50 mm from its nearest observed wall point.")
         if w["structural_corners"]:
             table(doc,"Structural corners and nearest assigned wall samples",["Corner","X (m)","Y (m)","Z (m)","Gap (mm)","Original row"],
                   [[key,*[fmt(t,3) for t in c["xyz_m"]],fmt(c["nearest_distance_mm"],1),c["nearest_wall_point_index"]] for key,c in zip("ABCD",w["structural_corners"])],
@@ -87,14 +85,14 @@ def write_word_report(output, data, sections):
                     locations.append([o["id"],name,*(fmt(t,4) for t in point)])
             table(doc,"Fitted opening centres and corners in scan coordinates",["Opening","Point","X (m)","Y (m)","Z (m)"],locations,[1.6,1.3,1.7,1.7,1.7],(2,3,4))
         footprints=[]
-        for scope in (("support",) if "support" in w else ())+("whole","patch"):
+        for scope in ("whole",):
             roi=w[scope]
             coverage=roi.get("coverage_fraction")
             footprints.append([scope.capitalize(),fmt(roi.get("rms_mm"),3),fmt(roi.get("p95_abs_mm"),3),
                                "—" if coverage is None else f"{coverage:.1%}",roi["status"]])
         table(doc,"Flatness and observed coverage for this wall",["Region","RMS (mm)","Abs. P95 (mm)","Coverage","Status"],
               footprints,[1.3,1.5,1.9,1.6,1.7],(1,2,3))
-        for key in (("support",) if "support" in w else ())+("whole","patch"):
+        for key in ("whole",):
             item=w[key]
             if item.get("reason"): doc.add_paragraph(key.capitalize()+" footprint. "+item["reason"])
             elif item.get("warnings"): doc.add_paragraph(key.capitalize()+" footprint flags include "+", ".join(item["warnings"])+".")

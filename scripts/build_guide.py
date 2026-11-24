@@ -14,7 +14,7 @@ def main():
     def t(headers,rows):
         table(doc,headers,rows);md.append('| '+' | '.join(headers)+' |\n|'+ '|'.join(['---']*len(headers))+'|\n'+'\n'.join('| '+' | '.join(map(str,r))+' |' for r in rows)+'\n')
     def page():doc.add_page_break()
-    p('这是把伙伴提供的 Task 1 项目与我们的墙面粗糙度项目组合后的独立仓库。输入一个完整房间点云即可依次分墙、识别门窗、检查墙角、寻找局部测区、计算墙面 RMS，并生成 Word 与 HTML 报告。无需先由人手工选择四个点。')
+    p('这是把伙伴提供的 Task 1 项目与我们的墙面粗糙度项目组合后的独立仓库。输入一个完整房间点云即可依次分墙、识别门窗、检查墙角、计算墙面 RMS，并生成 Word 与 HTML 报告。无需先由人手工选择四个点。')
     h('一 总体任务与组合原则')
     p('课程 Task 1 的主要结果是房间长宽高、门窗宽高和墙面粗糙度，还需文献综述、方案说明、测量误差评价及课程要求的展示。生成测量报告只是成果的一部分，不等于已经完成所有课程要求。')
     t(['模块','采用哪一部分','你的工作边界'],[
@@ -22,48 +22,45 @@ def main():
         ['分墙支持点','我们的 Efficient RANSAC','完整有限点输入、墙体规则、保留原始支持点与点号'],
         ['门窗与深度','伙伴 Task 1','保留沿墙剖面、边界、尺寸和窗框深度分析'],
         ['墙角与房间尺寸','伙伴 Task 1','保留四墙闭合、顶面覆盖、三平面相交和角点复核'],
-        ['局部测区','伙伴 Task 1','保留默认 1×1 m 与原覆盖规则'],
         ['墙面粗糙度','我们的无滤波方法','原始坐标 SVD 拟合、正交距离 RMS、可追溯误差评估'],
-        ['结果与报告','伙伴 Task 1 加适配','沿用报告结构，增加原版支持点 RMS 和来源记录']])
+        ['结果与报告','伙伴 Task 1 加适配','沿用报告结构，输出整墙 RMS 和原始点来源']])
     p('你的核心责任仍是“完整点云 → 原版墙支持点 → 墙面 RMS”及其准确性评价。队友继续负责门窗语义、房间/洞口尺寸与墙角正确性。组合代码把接口串起来，但不替代实测真值和人工复核。')
     page();h('二 怎样与流程图逐项对应')
     p('第一步，输入单房间 PCD 或带 x,y,z 表头的 CSV，明确 m/mm 和向上方向。原始点号按文件点记录从 0 计数，不是 PCD 文本的行号。非有限行保留编号位置但不参与原版检测。')
     p('第二步，在完整有限点云上用原版 Efficient RANSAC 检测平面，再以方向、尺寸、接地规则筛出墙候选。相近共面片段只对已有支持点取并集。“取回原始点”只是根据点号取 XYZ，不在平面附近补点。')
     p('第三步，按伙伴项目同时走三条路径：门窗剖面识别与边界拟合；原始墙点归属；四墙闭合、顶面覆盖和结构角点检查。门窗检测结果转换为洞口中心、四角、宽高和深度信息。')
-    p('第四步，按伙伴项目剔除检出洞口投影内的墙支持点，获得可用墙点；没有检出洞口就保留全部归属点。可用墙点用于整墙和局部区域计算。检测空洞仍可能是遮挡，所以空间排除规则及洞口身份需核验。')
-    p('第五步，结构可靠时输出整墙四角；缺少闭合或可靠顶面时输出待复核并继续局部分析。局部测区默认 1×1 m，使用伙伴的 50 mm 网格、每格至少三个点和 100 mm 边界余量，覆盖不足会说明原因，不按较小 RMS 挑区域。')
-    p('第六步，在指定四角的二维投影区域内对原始点重新 SVD 拟合，计算 RMS 并生成报告。另保留全部原版支持点 RMS 作为主方法基线，便于与独立粗糙度项目核对。')
+    p('第四步，按伙伴项目剔除检出洞口投影内的墙支持点，获得可用墙点；没有检出洞口就保留全部归属点。可用墙点用于整墙计算。检测空洞仍可能是遮挡，所以空间排除规则及洞口身份需核验。')
+    p('第五步，结构可靠时输出整墙四角；缺少闭合或可靠顶面时将该墙的整墙 RMS 标为待复核。')
+    p('第六步，在指定四角的二维投影区域内对原始点重新 SVD 拟合，计算 RMS 并生成报告。')
     p('本次沿用伙伴墙角规则，没有使用独立框架更严格的 250 mm 最大角点支持距离门槛。伙伴对超过 50 mm 的角点外推给出警示；这只是角点证据提示，不是 RMS 的厚度过滤。')
     page();h('三 输入输出与 RMS 定义')
     t(['内容','约定'],[
         ['必需输入','完整单房间点云、坐标单位、向上方向；不用手工四角'],
-        ['可选输入','局部测区大小；替换五接口的 profile'],
-        ['support','全部原版墙支持点，无门窗排除与四角裁剪，主方法对照基线'],
+        ['可选输入','用于配置四个接口的 profile'],
         ['whole','排除检出洞口后，整墙结构四角内支持点的 RMS'],
-        ['patch','排除检出洞口后，局部测区内支持点的 RMS'],
         ['文件输出','summary.json、CSV、原始点号与残差、立面图、Word 和 HTML']])
-    p('SVD 用来找到点集的最佳拟合平面。每个点到平面的正交距离记为 d，RMS 是 Root Mean Square，即 sqrt(mean(d²))。坐标内部用米计算，再乘 1000 输出毫米。三个测量域可能有不同 RMS，不能互相冒充。')
-    p('墙面测量不做 SOR/ROR、平滑、残差裁剪、50 mm 法向恢复或 50 mm 厚度筛选。ROI 文件的 slab_half_thickness_mm 是 null。局部测区与已检出洞口的几何边界排除属于区域定义；门窗 8 mm 面层和窗框深度切片属于伙伴检测模块，不影响 support 点集。')
+    p('SVD 用来找到点集的最佳拟合平面。每个点到平面的正交距离记为 d，RMS 是 Root Mean Square，即 sqrt(mean(d²))。坐标内部用米计算，再乘 1000 输出毫米。')
+    p('墙面测量不做 SOR/ROR、平滑、残差裁剪、50 mm 法向恢复或 50 mm 厚度筛选。ROI 文件的 slab_half_thickness_mm 是 null。已检出洞口的几何边界排除属于区域定义；门窗 8 mm 面层和窗框深度切片属于伙伴检测模块，不影响 support 点集。')
     p('原接口字段 expanded_indices 在适配后只是兼容名称，值精确等于原版支持点索引。每域 residuals.npz 保存原始点号和带符号距离，可以复算 sqrt(mean(signed_mm²))。native_supports.txt 和构建/输入指纹用于检查点来源。')
     page();h('四 完整点云实验与 GT 对照')
-    t(['房间','输入点数','墙候选','有效局部区','结构状态'],[[r['source'].split('.')[0],r['n_input'],r['n_walls'],r['valid_patches'],r['structural_status']] for r in evidence['records']])
-    t(['房间','墙号','支持点 RMS mm'],[[r['source'].split('.')[0],w['wall'],f"{w['support_rms_mm']:.6f}"] for r in evidence['records'] for w in r['walls']])
-    p('八面墙均已逐点核对为原版支持集，并用独立协方差特征值法复算 RMS。与独立框架的最大数值差为 '+f"{evidence['max_baseline_difference_mm']:.3g}"+' mm，属于浮点舍入量级。这个结论证明计算与点集一致，不证明全部工程测量精度已合格。')
+    t(['房间','输入点数','墙候选','结构状态'],[[r['source'].split('.')[0],r['n_input'],r['n_walls'],r['structural_status']] for r in evidence['records']])
+    t(['房间','墙号','整墙 RMS mm'],[[r['source'].split('.')[0],w['wall'],f"{w['whole_rms_mm']:.6f}"] for r in evidence['records'] for w in r['walls']])
+    p('八面墙的原版支持点均已逐点核对。整墙 RMS 使用实际入选点与其原始坐标独立复算。')
     page();gt_start=len(md);h('五 官方指定墙的 GT 对照')
     rows=[]
     for room,wid,gt in [('M04','W01',1.8),('M26','W03',1.0)]:
-        r=next(r for r in evidence['records'] if r['source']==room+'.pcd');w=next(w for w in r['walls'] if w['wall']==wid);d=w['support_rms_mm']-gt
-        rows.append([room+' '+wid,f'{gt:.1f}',f"{w['support_rms_mm']:.6f}",f'{d:+.6f}',f'{abs(d)/gt*100:.2f}%'])
-    t(['房间墙号','官方 GT mm','支持点 RMS mm','计算值减 GT mm','相对绝对差'],rows)
+        r=next(r for r in evidence['records'] if r['source']==room+'.pcd');w=next(w for w in r['walls'] if w['wall']==wid);d=w['whole_rms_mm']-gt
+        rows.append([room+' '+wid,f'{gt:.1f}',f"{w['whole_rms_mm']:.6f}",f'{d:+.6f}',f'{abs(d)/gt*100:.2f}%'])
+    t(['房间墙号','官方 GT mm','整墙 RMS mm','计算值减 GT mm','相对绝对差'],rows)
     p('GT 来源是课程点云说明 readme(1).md 的 Ground-Truth Measurements：M04 为配图标出的墙，1.8 mm；M26 为门对面的墙，1.0 mm。数据说明称其为人工测量值。当前候选墙对应分别为 W01、W03，墙号是本次算法运行编号，不能跨不同算法直接照搬。')
-    p('相对绝对差 = |计算值 − GT| / GT × 100%。这里使用 support RMS，没有把局部区域或 whole RMS 混入比较。M04 低于参考值，M26 高于参考值；较低 RMS 不等于更准确。')
-    p('官方资料缺少精确测区四角和完整测量规程，当前不能证明官方区域与支持点区域完全一致，因此这张表应称为官方参考差异，不应直接称为同测区真实误差。下一步应由小组确认墙身份和测区边界，再评价点集 Precision/Recall/IoU、同测区 RMS 误差、房间/洞口尺寸误差及失败率。')
+    p('相对绝对差 = |计算值 − GT| / GT × 100%。这里使用整墙 RMS。M04 低于参考值，M26 高于参考值；较低 RMS 不等于更准确。')
+    p('官方资料缺少精确测区四角和完整测量规程，当前不能证明官方区域与整墙计算区域完全一致，因此这张表应称为官方参考差异，不应直接称为同测区真实误差。下一步应由小组确认墙身份和测区边界，再评价点集 Precision/Recall/IoU、同测区 RMS 误差、房间/洞口尺寸误差及失败率。')
     (ROOT/'docs/gt_comparison.md').write_text('\n'.join(md[gt_start:]),encoding='utf-8')
     page();h('六 运行交付与剩余工作')
     p('仓库 https://github.com/x13230802751/room-inspection-integrated 。本地文件夹是 E:/博士/选课/7023/room_inspection_integrated。原压缩包和旧项目未被替换。组合仓库自带所需 Python 源码，不再要求用户找到另一个项目目录。')
     p('安装顺序：Git 克隆 → Python 虚拟环境与 requirements.txt → native_backend/scripts/fetch_native.py 下载固定版本原版代码 → native_backend/native/build.py 编译 → inspect_room.py 运行。Windows 网页入口为 run.cmd。详细命令在 README。')
     p('运行示例为 python inspect_room.py room.pcd --unit m --up 0 0 1 --out results/new_run。每次使用新输出目录。summary.json 记录输入和算法来源，完整实验总报告见 docs/Task1_Evaluation.docx。')
-    p('已完成：五接口组合、原始支持点桥接、无厚度带 RMS、单独支持点基线、默认网页/命令行接入、M04/M26 完整实验、逐点与数值核对、报告读写和失败分支验证。')
+    p('已完成：四接口组合、原始支持点桥接、无厚度带 RMS、默认网页/命令行接入、M04/M26 完整实验、逐点与数值核对、报告读写和失败分支验证。')
     p('仍需小组完成：实际门窗身份复核、墙身份/测区与官方参考配准、各类工程精度评价、课程文献与展示。原版支持点可能漏掉真实鼓包，几何检测可能误识别杂物。当前软件能计算并追溯结果，不等于已取得语义真值或保证所有房间准确。')
     doc.save(ROOT/'docs/组合方案与任务说明.docx')
     (ROOT/'docs/project_guide.md').write_text('# 房间点云组合项目方案与任务说明\n\n'+'\n'.join(md),encoding='utf-8')

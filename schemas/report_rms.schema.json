@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Report API v1 RMS record for native support, whole wall or patch",
+  "title": "Report API v1 RMS record for whole-wall RMS",
   "type": "object",
   "required": ["status"],
   "properties": {

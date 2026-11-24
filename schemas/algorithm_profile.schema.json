@@ -9,7 +9,7 @@
       "type": "object", "additionalProperties": false,
       "properties": {
         "walls": {"$ref": "#/$defs/stage"}, "corners": {"$ref": "#/$defs/stage"},
-        "openings": {"$ref": "#/$defs/stage"}, "patch": {"$ref": "#/$defs/stage"}, "rms": {"$ref": "#/$defs/stage"}
+        "openings": {"$ref": "#/$defs/stage"}, "rms": {"$ref": "#/$defs/stage"}
       }
     }
   },

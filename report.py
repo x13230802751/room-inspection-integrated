@@ -45,8 +45,6 @@ def plot_wall(output, xyz, wall, floor, result):
             ax.annotate(label,(x,y),xytext=(3,3),textcoords="offset points",color="#123244",fontsize=8)
     for o in result["openings"]:
         poly(o["corners_uv_m"], "#ad4a0a" if o["type"]=="door" else "#006a83",label=o["id"])
-    if "corners_m" in result["patch"]:
-        poly(project(result["patch"]["corners_m"]), "#19815c", "--")
     ax.axhline(0, lw=.5, color="#b8c4ca", zorder=0)
     ax.set(xlabel="Along wall, u (m)", ylabel="Height above floor (m)", aspect="equal")
     ax.spines[["top","right"]].set_visible(False)
@@ -125,15 +123,15 @@ def make_report(output, summary, sections):
                            [["Wall-face aperture","0",n(face["height_m"],4),n(face["width_mm"],3),"Fitted endpoints"],
                             ["Recessed frame candidate","—" if not depths else f"{depths[0]}–{depths[1]}",n(deep["height_m"],4),n(deep["width_mm"]),deep["status"].replace("_"," ")]]))
         parts.append(link(item["profile_file"],"Original-point depth profile")+"</section>")
-    parts.append("<section><h2>Wall flatness</h2>"+table(["Wall","Native support RMS (mm)","Whole RMS (mm)","Patch RMS (mm)","Support points"],
-                 [[w["id"],n(w.get("support",{}).get("rms_mm"),6),n(w["whole"].get("rms_mm"),3),n(w["patch"].get("rms_mm"),3),w.get("support",{}).get("n_selected","—")] for w in walls])+"</section>")
+    parts.append("<section><h2>Wall flatness</h2>"+table(["Wall","Whole RMS (mm)","Support points"],
+                 [[w["id"],n(w["whole"].get("rms_mm"),3),w["assigned_points"]] for w in walls])+"</section>")
     if summary.get('recovery')=='none':
-        parts.append('<p>Native support RMS is the unfiltered baseline before opening masks or ROI cropping. The partner pipeline masks detected opening footprints for whole and patch RMS. Opening outlines still require physical verification. No 50 mm recovery band or RMS slab is used.</p>')
+        parts.append('<p>Whole-wall RMS uses original supports within the structural corners, excluding detected opening footprints. Opening outlines still require physical verification. No 50 mm recovery band or RMS slab is used.</p>')
     for w in walls:
         parts.append(f'<article><h2>{e(w["id"])}</h2><div class="wall"><img src="{e(w["elevation_file"])}" alt="{e(w["id"])} wall elevation"><div>')
         parts.append(table(["Corner","X (m)","Y (m)","Z (m)","Nearest point (mm)"],
                            [[l,*[n(t,3) for t in c["xyz_m"]],n(c["nearest_distance_mm"],1)] for l,c in zip("ABCD",w["structural_corners"])]))
-        for scope in (("support",) if "support" in w else ())+("whole","patch"):
+        for scope in ("whole",):
             item=w[scope]
             if item.get("roi_file"):
                 links=[link(item["roi_file"],scope.capitalize()+" footprint")]

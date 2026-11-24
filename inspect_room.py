@@ -50,7 +50,7 @@ def save_tables(output, summary):
             corners.append([w["id"], label, *corner["xyz_m"], corner["nearest_wall_point_index"],
                             *corner["nearest_wall_point_xyz_m"], corner["nearest_distance_mm"],
                             corner["extrapolated_over_50mm"]])
-        for scope in (("support",) if "support" in w else ())+("whole", "patch"):
+        for scope in ("whole",):
             r = w[scope]
             rms.append([w["id"], scope, r["status"], r.get("rms_mm"), r.get("n_selected"),
                         r.get("coverage_fraction"), r.get("p95_abs_mm"), r.get("max_abs_mm"),
@@ -66,7 +66,7 @@ def save_tables(output, summary):
                               "height_median_mm","height_supported_sections"], sections)
 
 
-def inspect(source, output, unit, up, patch_size, node, algorithms=None):
+def inspect(source, output, unit, up, node, algorithms=None):
     algorithms = algorithms or load_profile()
     source_name = Path(str(source).split("::")[-1]).name
     print(f"Reading scan  {source_name}", flush=True)
@@ -108,7 +108,7 @@ def inspect(source, output, unit, up, patch_size, node, algorithms=None):
                                     "point_count":len(points), "invalid_rows":int((~np.isfinite(points).all(axis=1)).sum())},
         "coordinates":"Original coordinate axes and origin, expressed in metres. Original row indices start at 0.",
         "corner_order":"A lower left, B lower right, C upper right, D upper left in the plotted elevation; horizontal axis = inward wall normal cross upward floor normal.",
-        "floor":floor, "ceiling":ceiling, "room":room, "patch_size_m":list(patch_size),
+        "floor":floor, "ceiling":ceiling, "room":room,
         "discovery_config":config.to_dict(), "discovery_warnings":discovery.get("warnings",[]),
         "candidate_wall_count":len(candidates), "other_candidate_ids":[w["id"] for w in candidates if w["id"] not in measured_ids],
         "warnings":warnings, "walls":[], "integrations":{"room_walls":"149d280662e9f6256608efd1896b1744e82cf5d4",
@@ -123,9 +123,9 @@ def inspect(source, output, unit, up, patch_size, node, algorithms=None):
         (output/'native_supports.txt').write_text(native_text,encoding='utf-8')
         summary.update(native_detection=provenance,native_config=discovery['config'],
             native_structure=bounds.get('native_structure'),filter='none',recovery='none',
-            support_definition='Exact native support union before opening masks or four-corner cropping')
+            support_definition='Original native supports inside structural corners after masking detected openings')
         summary['integrations']['native_framework']=discovery['backend_source_sha256']
-        summary['warnings'].append('Detected opening footprints are masked for whole/patch measurement as in the partner pipeline; support RMS always uses all native wall supports.')
+        summary['warnings'].append('Detected opening footprints are masked for whole-wall RMS.')
     assignments = {}
     for wall in walls:
         wid = wall["id"]
@@ -148,19 +148,13 @@ def inspect(source, output, unit, up, patch_size, node, algorithms=None):
                 whole["warnings"].append("STRUCTURAL_CORNER_EXTRAPOLATION")
         else:
             whole = {"status":"unavailable", "reason":warnings[0] if warnings else "Review the four structural wall corners."}
-        patch_ids=wall_pool(points, wall, floor, opening_list) if native else raw_ids
-        patch, reason = algorithms.patch(points[patch_ids], wall, floor, boundary or wall["corners_m"], patch_size)
-        local = (measure_scope(output, points, raw_ids, np.asarray(patch).tolist(), source_name, wid, "patch", algorithms.rms)
-                 if patch is not None else {"status":"unavailable", "reason":reason})
         result = {"id":wid, "plane_center_m":wall["plane_center_m"], "plane_normal":wall["plane_normal"],
                   "structural_corners":structural, "assigned_points":len(assigned),
                   "excluded_opening_points":len(assigned)-len(raw_ids), "openings":opening_list,
-                  "opening_checks":checks, "whole":whole, "patch":local,
+                  "opening_checks":checks, "whole":whole,
                   "wall_recovery_edge_fraction":wall.get("recovery_edge_fraction")}
         if native:
-            from extensions.native_support import measure as native_rms
-            result['support']=measure_scope(output,points,assigned,None,source_name,wid,'support',native_rms)
-            result['native_plane_ids']=wall['native_plane_ids']
+            result["native_plane_ids"]=wall["native_plane_ids"]
         result["elevation_file"] = plot_wall(output, points[assigned], wall, floor, result)
         summary["walls"].append(result)
     np.savez_compressed(output/"wall_points.npz", **assignments)
@@ -177,14 +171,11 @@ def main():
     parser.add_argument("cloud", help="PCD, CSV (x,y,z) or archive.zip::member.pcd")
     parser.add_argument("--unit", choices=["m","mm"], default="m", help="input coordinate unit (default: m)")
     parser.add_argument("--up", nargs=3, type=float, default=(0,0,1), metavar=("X","Y","Z"))
-    parser.add_argument("--patch-size", nargs=2, type=float, default=(1.,1.), metavar=("WIDTH_M","HEIGHT_M"))
     parser.add_argument("--out", type=Path, help="new result directory, created after processing succeeds")
     parser.add_argument("--open-report", action="store_true")
     parser.add_argument("--open-word", action="store_true", help="open the generated Word report")
     parser.add_argument("--profile",default="default",help="installed algorithm profile name or local JSON file")
     args = parser.parse_args()
-    if not all(np.isfinite(x) and x>0 for x in args.patch_size):
-        parser.error("--patch-size requires two positive finite lengths in metres")
     node = shutil.which(os.environ.get("TASK1_NODE") or "node")
     name = Path(args.cloud.split("::")[-1]).stem
     suffix = datetime.now().strftime("%Y%m%d_%H%M%S")+"_"+uuid4().hex[:8]
@@ -197,7 +188,7 @@ def main():
         with TemporaryDirectory(dir=target.parent, prefix=".task1-") as stage:
             output = Path(stage)/"result"
             output.mkdir()
-            inspect(args.cloud, output, args.unit, args.up, args.patch_size, node, algorithms)
+            inspect(args.cloud, output, args.unit, args.up, node, algorithms)
             output.rename(target)
     except (OSError, ValueError, zipfile.BadZipFile, KeyError, RuntimeError, np.linalg.LinAlgError) as error:
         parser.exit(1, f"Measurement failed. {error}\n")

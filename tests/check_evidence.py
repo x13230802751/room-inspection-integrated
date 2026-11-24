@@ -42,7 +42,7 @@ def verify(runs,clouds=None):
             room_errors.append(s["room"][k+"_mm"]-manual["dimensions_mm"][k])
         valid_scopes=0
         for wall in s["walls"]:
-            for kind in ("whole","patch"):
+            for kind in ("whole",):
                 item=wall[kind]
                 if "rms_mm" not in item:
                     assert item["status"]=="unavailable"

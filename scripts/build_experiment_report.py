@@ -30,7 +30,7 @@ def main():
     doc = new_document('Task 1 房间点云自动测量实验报告')
     p, h = doc.add_paragraph, doc.add_heading
 
-    p('本次实验用最新组合版重新处理课程 M04 和 M26 的完整点云，评估房间长宽高、门窗尺寸和墙面平整度。门窗、结构角点和局部测区沿用伙伴项目的实现。墙面粗糙度使用原版 Efficient RANSAC 支持点与无滤波 SVD 拟合。')
+    p('本次实验用最新组合版重新处理课程 M04 和 M26 的完整点云，评估房间长宽高、门窗尺寸和墙面平整度。门窗和结构角点沿用伙伴项目的实现。墙面粗糙度使用原版 Efficient RANSAC 支持点与无滤波 SVD 拟合。')
     h('一 实验设置与测量流程', 1)
     run_rows = []
     for name, record in records.items():
@@ -43,8 +43,8 @@ def main():
         run_rows.append([name, f"{cloud['point_count']:,}", record['native_detection']['n_detector_input'],
                          record['candidate_wall_count'], len(record['walls'])])
     table(doc, ['房间', '原始点数', '实际检测点数', '墙候选数', '输出墙数'], run_rows)
-    p('输入为课程原始 PCD，单位为米，向上方向为 +Z，局部测区默认 1 × 1 m。原版检测器提取平面，墙体几何规则筛选墙候选。系统按原始点号提取 XYZ，依次计算墙角、门窗剖面和测区，再生成每个房间的 Word、HTML 和逐点残差。')
-    p('Support RMS 使用墙体规则保留的全部原版支持点。Whole RMS 使用结构四角内的可用墙点。Patch RMS 使用局部测区内的可用墙点。后两项按伙伴项目规则排除检出洞口投影内的点。各测区独立用 SVD 拟合，取点到平面的正交距离均方根并转换为毫米。全程无额外降采样、去噪、附近点恢复或 RMS 厚度筛选。')
+    p('输入为课程原始 PCD，单位为米，向上方向为 +Z。原版检测器提取平面，墙体几何规则筛选墙候选。系统按原始点号提取 XYZ，依次计算墙角、门窗剖面和测区，再生成每个房间的 Word、HTML 和逐点残差。')
+    p('整墙 RMS 使用结构四角内的原版墙支持点，排除检出洞口投影内的点。每面墙独立用 SVD 拟合，取点到平面的正交距离均方根并转换为毫米。全程无额外降采样、去噪、附近点恢复或 RMS 厚度筛选。')
     p(f"组合项目提交 {audits['git_commit']}。检测随机种子 {records['M04']['native_detection']['seed']}。输入校验、支持点来源和运行参数见本次输出的 summary.json 与 audit.json。人工参考来自课程数据说明。")
 
     doc.add_page_break()
@@ -94,28 +94,27 @@ def main():
         ref = record['manual_reference']['rms']
         for wall in record['walls']:
             label = f"{name} {wall['id']}"
-            support = wall['support']
-            walls.append([label, support['n_selected'], region(support), region(wall['whole']), region(wall['patch'])])
+            whole = wall['whole']
+            walls.append([label, wall['assigned_points'], whole.get('n_selected', '—'), region(whole)])
             if wall['id'] == ref['wall_id_in_this_scan']:
-                value, gt = support['rms_mm'], ref['value_mm']
+                value, gt = whole['rms_mm'], ref['value_mm']
                 comparison.append([label, f'{gt:.1f}', f'{value:.6f}', f'{value-gt:+.6f}', f'{abs(value-gt)/gt:.2%}'])
     assert len(comparison) == 2
-    table(doc, ['房间和墙号', '支持点数', 'Support mm', 'Whole mm', 'Patch mm'], walls)
-    p('星号表示结构角点离最近实测墙点超过 50 mm，整墙结果附外推警示。局部未测出表示默认测区未通过覆盖要求。')
-    table(doc, ['参考墙', 'GT mm', 'Support mm', '计算减 GT mm', '相对绝对差'], comparison)
+    table(doc, ['房间和墙号', '支持点数', '整墙入选点数', '整墙 RMS mm'], walls)
+    p('星号表示结构角点离最近实测墙点超过 50 mm，整墙结果附外推警示。')
+    table(doc, ['参考墙', 'GT mm', '整墙 RMS mm', '计算减 GT mm', '相对绝对差'], comparison)
     p('M04 W01 对应配图标出的墙候选，M26 W03 对应门对面的墙候选。官方参考未提供精确测区四角，因此表内差值按参考差异解释。相对绝对差为绝对差除以 GT。表格多位小数用于复核计算。')
 
     doc.add_page_break()
     h('四 复核与实验局限', 1)
-    p('对两个房间逐墙检查原始索引。每面墙的支持点精确等于其对应原版检测平面支持集的并集。使用原始 XYZ 构造协方差矩阵，根据最小特征值独立复算支持点 RMS，并核对整墙、局部结果及其残差文件。')
+    p('对两个房间逐墙检查原始索引。每面墙的支持点精确等于其对应原版检测平面支持集的并集。使用原始 XYZ 构造协方差矩阵，根据最小特征值独立复算整墙 RMS，并核对残差文件。')
     for name, record in records.items():
         notes = []
         for w in record['walls']:
             if w['whole']['status']=='warning':
                 gap = max(c['nearest_distance_mm'] for c in w['structural_corners'])
                 notes.append(f"{w['id']} 最大角点外推 {gap:.1f} mm")
-        patches = sum('rms_mm' in w['patch'] for w in record['walls'])
-        p(f'{name} 共 {patches}/{len(record["walls"])} 面墙得到有效局部测区。' + ('，'.join(notes)+'。' if notes else ''))
+        p(f'{name} 共 {len(record["walls"])} 面墙。' + ('，'.join(notes)+'。' if notes else ''))
     p('支持点范围由原版检测器决定。较大鼓包、缺测和遮挡都可能影响支持点覆盖，因此需要同测区的独立测量来评价实体墙平整度。门窗轮廓和窗框深度来自几何检测，人工测量与点云使用的接触位置也会影响尺寸差异。')
     h('运行证据', 2)
     p('两套输入的 SHA-256 可用于确认原始数据。')

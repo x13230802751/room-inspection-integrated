@@ -20,7 +20,7 @@ class NativeContractTests(unittest.TestCase):
         with TemporaryDirectory() as d:
             # Non-contiguous original indices must survive the wrapper.
             cloud=np.zeros((len(p)*2,3));ids=np.arange(len(p))*2;cloud[ids]=p
-            out=measure_scope(Path(d),cloud,ids,roi['corners'],'test','W01','patch',measure)
+            out=measure_scope(Path(d),cloud,ids,roi['corners'],'test','W01','whole',measure)
             saved=json.loads((Path(d)/out['roi_file']).read_text())
             self.assertIsNone(saved['slab_half_thickness_mm'])
             with np.load(Path(d)/out['residual_file']) as residual:np.testing.assert_array_equal(residual['point_index'],ids)
@@ -54,15 +54,13 @@ def audit(source,folder):
         for wall in data['walls']:
             ids=pools[wall['id']+'_assigned'];expected=original[np.sort(np.concatenate([native[i] for i in wall['native_plane_ids']]))]
             np.testing.assert_array_equal(ids,expected)
-            m=wall['support']
-            with np.load(folder/m['residual_file']) as residual:
-                np.testing.assert_array_equal(residual['point_index'],ids)
-                p=points[ids];q=p-p.mean(0);rms=np.sqrt(max(0,np.linalg.eigvalsh(q.T@q/len(p))[0]))*1000
-                assert abs(rms-m['rms_mm'])<1e-6
-            for key in ('support','whole','patch'):
-                if wall[key].get('roi_file'):
-                    roi=json.loads((folder/wall[key]['roi_file']).read_text());assert roi['slab_half_thickness_mm'] is None
-            rows.append(dict(wall=wall['id'],support_rms_mm=m['rms_mm'],n_support=len(ids)))
+            whole=wall['whole']
+            assert set(wall).isdisjoint({'support','patch'})
+            if whole.get('roi_file'):
+                roi=json.loads((folder/whole['roi_file']).read_text())
+                assert roi['slab_half_thickness_mm'] is None
+            rows.append(dict(wall=wall['id'],whole_rms_mm=whole.get('rms_mm'),
+                             whole_status=whole['status'],n_support=len(ids)))
     return dict(source=data['cloud']['file'],sha256=data['cloud']['sha256'],exact_native_membership=True,
         n_input=len(points),n_walls=len(rows),structural_status='ok' if data.get('room') else 'needs_review',walls=rows)
 

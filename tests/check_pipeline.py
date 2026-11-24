@@ -28,7 +28,7 @@ def audit(source, output):
         for wall in data["walls"]:
             for o in wall["openings"]:
                 assert f'{o["width_mm"]:.2f}' in cells and f'{o["height_mm"]:.2f}' in cells
-            for region in (wall["whole"],wall["patch"]):
+            for region in (wall["whole"],):
                 if "rms_mm" in region:
                     assert f'{region["rms_mm"]:.3f}' in cells
     xyz, digest = read_cloud(str(source),with_hash=True)
@@ -68,7 +68,7 @@ def audit(source, output):
                             assert abs(np.median([s["span_mm"] for s in samples])-group[direction+"_median_mm"])<1e-7
                         for s in samples:
                             assert 0<=s["first_index"]<len(xyz) and 0<=s["last_index"]<len(xyz)
-            for k in ("whole","patch"):
+            for k in ("whole",):
                 result = w[k]
                 if result["status"]=="unavailable":
                     assert "rms_mm" not in result
@@ -148,7 +148,7 @@ def smoke():
                 assert all(len(w["structural_corners"])==4 and "rms_mm" in w["whole"] for w in data["walls"])
             else:
                 assert not openings and data["ceiling"] is None and data["room"] is None
-                assert all(not w["structural_corners"] and w["whole"]["status"]=="unavailable" and "rms_mm" in w["patch"] for w in data["walls"])
+                assert all(not w["structural_corners"] and w["whole"]["status"]=="unavailable" for w in data["walls"])
             before = hashlib.sha256((output/"summary.json").read_bytes()).digest()
             assert subprocess.run(cmd,capture_output=True).returncode!=0
             assert hashlib.sha256((output/"summary.json").read_bytes()).digest()==before
